@@ -4,6 +4,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 // TODO: 24/2/23 mirar que se marquen las casillas tocadas y hundidas en cada uno de los tableros
+//poner niveles vs maquina, colores para barcos, arraylist para modificacion tamaño
 public class HundirLaFlota {
     public static final int FILAS = 10;
     public static final int COLUMNAS = 10;
