@@ -3,8 +3,6 @@ import java.util.*;
 import java.util.Random;
 import java.util.Scanner;
 
-// TODO: 24/2/23 mirar que se marquen las casillas tocadas y hundidas en cada uno de los tableros
-//poner niveles vs maquina, colores para barcos, arraylist para modificacion tamaño
 public class HundirLaFlota {
     public static final int FILAS = 10;
     public static final int COLUMNAS = 10;
@@ -15,61 +13,105 @@ public class HundirLaFlota {
     public static final int BARCO = 1;
     public static final int TOCADO = 2;
     public static final int HUNDIDO = 3;
-
     public static final int FALLADO = 4;
+    public static int[][] tableroJugador = new int[FILAS][COLUMNAS];
+    public static int[][] tableroMaquina = new int[FILAS][COLUMNAS];
 
     public static void main(String[] args) {
-        int[][] tableroJugador = new int[FILAS][COLUMNAS];
-        int[][] tableroMaquina = new int[FILAS][COLUMNAS];
-        System.out.println("Tablero jugador:");
-        inicializarTablero(tableroJugador);
-        // colocarBarcos(tableroJugador);
-        colocarBarcosAleatorio(tableroJugador);//aixo es treu pero per debbugging va be
-        mostrarTablero(tableroJugador,false);
-        System.out.println("Tablero Maquina:");
-        inicializarTablero(tableroMaquina);
-        colocarBarcosAleatorio(tableroMaquina);
-        mostrarTablero(tableroMaquina, false);
+        menu();
 
+    }
+//menu recursivo
+    /**
 
+     Muestra el menú principal del juego Hundir la Flota.
+     Dependiendo de la opción elegida, el método llama a
+     diferentes funciones del juego.
+     @param
+     @return void
+     */
+    public static void menu() {
 
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
 
-        boolean juegoTerminado = false;
-        boolean turnoJugador = true;
+        System.out.println("----- Hundir la flota -----");
+        System.out.println("1.Posicionar barcos manualmente.");
+        System.out.println("2.Posicionar barcos aleatoriamente.");
+        System.out.println("3.Empezar la partida");
+        System.out.println("4. Salir");
+        System.out.print("Escoje --> ");
+        opcion = scanner.nextInt();
 
-        while (!juegoTerminado) {
-            if (turnoJugador) {
+        switch(opcion) {
+            case 1:
+                System.out.println("POSICIONAMIENTO MANUAL:");
+                inicializarTablero(tableroJugador);
+                colocarBarcos(tableroJugador);
+                menu();
+                break;
+            case 2:
+                System.out.println("POSICIONAMIENTO ALEATORIO:");
+                colocarBarcosAleatorio(tableroJugador);
+                menu();
+                break;
+            case 3:
+                System.out.println("Buena suerte!");
+                inicializarTablero(tableroMaquina);
+                colocarBarcosAleatorio(tableroMaquina);
+                mostrarTablero(tableroMaquina ,false);
+                boolean juegoTerminado = false;
+                boolean turnoJugador = true;
 
-                System.out.println("Turno del jugador:");
-                mostrarTablero(tableroMaquina, true);
-                atacar(tableroMaquina);
-                juegoTerminado = todosBarcosHundidos(tableroMaquina);
-            } else {
+                while (!juegoTerminado) {
+                    if (turnoJugador) {
 
-                System.out.println("Turno de la máquina:");
-                // para hacer un rango para que el tiro sea mas inteligente para cuando toque un
-                // barco
-                int ultimaFila = 0;//no entinedo pk falla aqui
-                int ultimaColumna = 0;//y aqui
+                        System.out.println("Turno del jugador:");
+                        atacar(tableroMaquina);
+                        mostrarTablero(tableroMaquina, true);
+                  //      int ultimaFila = 0;//no entinedo pk falla aqui --para si se quiere probar en maquina vs maquina
+                  //      int ultimaColumna = 0;//y aqui
+                  //      int[] coordenadas = atacarAleatorio(tableroMaquina, ultimaFila,ultimaColumna);
+                  //      ultimaFila = coordenadas[0];
+                  //      ultimaColumna = coordenadas[1];
 
-                int[] coordenadas = atacarAleatorio(tableroJugador, ultimaFila, ultimaColumna);
-                ultimaFila = coordenadas[0];
-                ultimaColumna = coordenadas[1];
-               // atacarAleatorio(tableroJugador, ultimaFila, ultimaColumna);
-                juegoTerminado = todosBarcosHundidos(tableroJugador);
-                mostrarTablero(tableroMaquina, true);
-            }
-            turnoJugador = !turnoJugador;
-        }
+                        juegoTerminado = todosBarcosHundidos(tableroMaquina);
+                    } else {
 
-        if (turnoJugador) {
-            System.out.println("¡Has ganado!");
-        } else {
-            System.out.println("¡Has perdido!");
+                        System.out.println("Turno de la máquina:");
+                        // para hacer un rango para que el tiro sea mas inteligente para cuando toque un
+                        // barco
+                        int ultimaFila = 0;//no entinedo pk falla aqui
+                        int ultimaColumna = 0;//y aqui
+
+                        int[] coordenadas = atacarAleatorio(tableroJugador, ultimaFila, ultimaColumna);
+                        ultimaFila = coordenadas[0];
+                        ultimaColumna = coordenadas[1];
+                        // atacarAleatorio(tableroJugador, ultimaFila, ultimaColumna);
+                        juegoTerminado = todosBarcosHundidos(tableroJugador);
+                        mostrarTablero(tableroJugador, true);
+                    }
+                    turnoJugador = !turnoJugador;
+                }
+
+                if (!turnoJugador) {
+                    System.out.println("¡Has ganado!");
+                } else {
+                    System.out.println("¡Has perdido!");
+                }
+
+                break;
+            case 4:
+                System.out.println("otro dia sera.");
+                break;
+            default:
+                System.out.println("Opción no válida");
+                menu();
+                break;
         }
     }
 
-    // INICIALIZARTABLERO funciona
+    // INICIALIZARTABLERO
     /**
      * inicializar tablero
      */
@@ -81,7 +123,7 @@ public class HundirLaFlota {
         }
     }
 
-    // ATACARALEATORIO quizas funciona pero va bien MAKINA
+    // ATACARALEATORIO
 
     /**
      * Función con la posibilidad de elegir un rango de posiciones alrededor
@@ -101,9 +143,8 @@ public class HundirLaFlota {
      * @param ultimaColumna  la ultima columna tocada en la jugada anterior
      * @return void
      */
-    // TODO: 24/2/23 para nivel dificil cambiar fallado por agua y asi se vueve inmortal
-    // TODO: 24/2/23 poner modos: automatico(maquina contra maquina) superdificil cada vez que la maquina aciert ael jugador tiene dos turnos
-    
+
+
     private static int[] atacarAleatorio(int[][] tableroJugador, int ultimaFila, int ultimaColumna) {
         Random random = new Random();
         int fila;
@@ -129,12 +170,14 @@ public class HundirLaFlota {
             do {
                 fila = random.nextInt(FILAS);
                 columna = random.nextInt(COLUMNAS);
-            } while (tableroJugador[fila][columna] == FALLADO || tableroJugador[fila][columna] == TOCADO);//en fallado anava agua
+            } while (fila < 0 || fila >= FILAS || columna < 0 || columna >= COLUMNAS
+                    || tableroJugador[fila][columna] == FALLADO
+                    || tableroJugador[fila][columna] == TOCADO || tableroJugador[fila][columna] == HUNDIDO);//en fallado anava agua
         }
         // si el numero le da en un valor que equivale a barco
         if (tableroJugador[fila][columna] == BARCO) {
             System.out.println(
-                    "Damn! la maquina te ha pillado un barco en la posición " + fila + "," + columna + " ,rebientalo!");
+                    "Damn! la maquina te ha pillado un barco en la posición " + (fila + 1) + "," + (columna +1) + " ,rebientalo!");
             tableroJugador[fila][columna] = TOCADO;
             // en el caso de que el tiro hunda un barco
             if (barcoHundido(tableroJugador, fila, columna)) {
@@ -142,12 +185,11 @@ public class HundirLaFlota {
             }
         } else {
             // si el numero le da en un valor que equivale a agua
-            System.out.println("Nah, un disparo fallido de la maquina en la posicion " + fila + "," + columna);
+            System.out.println("Nah, un disparo fallido de la maquina en la posicion " + (fila + 1) + "," + (columna + 1));
             tableroJugador[fila][columna] = FALLADO;
         }
         // guarda los valores para la proxima jugada en el caso que sea tocado poder
-        // tirar de
-        // forma mas inteligente
+        // tirar de forma mas inteligente
         int[] coordenadas = new int[2];
         coordenadas[0] = fila;
         coordenadas[1] = columna;
@@ -186,7 +228,16 @@ public class HundirLaFlota {
 
     }
 
-    // ATACAR quizas funciona
+
+    // ATACAR
+    /**
+     Permite al usuario poner las coordenadas de un ataque al tablero de la máquina
+     que realiza la validación correspondiente para determinar si el ataque es válido o no.
+     Si el ataque es válido y acierta en un barco, lo marca como tocado y, si toca todas las
+     posiciones del barco lo marca como hundido. Si el ataque no es valido o ya se ha atacado en esas coordenadas,
+     se informa al usuario y se pide que ingrese unas nuevas coordenadas.
+     @param tableroMaquina el tablero de la máquina donde se realizará el ataque
+     */
     private static void atacar(int[][] tableroMaquina) {
         Scanner scanner = new Scanner(System.in);
 
@@ -224,7 +275,11 @@ public class HundirLaFlota {
         }
     }
 
-    // COLOCARBARCOSALEATORIO------------------------
+    // COLOCARBARCOSALEATORIO
+    /**
+     Coloca barcos aleatorios en uel tablero dado.
+     @param tablero La matriz que representa el tablero del juego.
+     */
     public static void colocarBarcosAleatorio(int[][] tablero) {
         Random random = new Random();
         int filaInicio = 0;
@@ -289,7 +344,6 @@ public class HundirLaFlota {
                         tablero[filaFin+j][columnaFin] = BARCO;
                     }
                 }
-//SUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
 
                 // colocar barco vertical
             }
@@ -297,7 +351,7 @@ public class HundirLaFlota {
 
     }
 
-    // COLOCARBARCOS funciona
+    // COLOCARBARCOS
     /**
      * Esta funcion permite al ususario colocar sus barcos al tablero del juego
      * El usuario tiene que poner las cordenadas de los barcos para cada barco que
@@ -360,7 +414,7 @@ public class HundirLaFlota {
         }
     }
 
-    // COLOCARBARCOS funciona
+    // verificar barcos
     /**
      * verifica si las cordenadas de inicio y fin del barco son validas y si el
      * barco cabe
@@ -405,8 +459,13 @@ public class HundirLaFlota {
         return true;
     }
 
-    // TODOSBARCOSHUNDIDOS ---------------------------------
-    private static boolean todosBarcosHundidos(int[][] tablero) {
+    // TODOSBARCOSHUNDIDOS
+    /**
+     Determina si todos los barcos en el tablero han sido hundidos.
+     @param tablero matriz de enteros que representa el tablero de juego.
+     @return true si todos los barcos han sido hundidos, false si no.
+     */
+    public static boolean todosBarcosHundidos(int[][] tablero) {
         for (int fila = 0; fila < FILAS; fila++) {
             for (int columna = 0; columna < COLUMNAS; columna++) {
                 if (tablero[fila][columna] == BARCO) {
@@ -418,7 +477,7 @@ public class HundirLaFlota {
     }
 
 
-    // MOSTRARTABLERO funciona
+    // MOSTRARTABLERO
     /**
      *
      * Mostra el contenido del tablero, tanto el agua como los barcos tocados y
@@ -451,9 +510,9 @@ public class HundirLaFlota {
                 } else if (tablero[i][j] == TOCADO) {
                     System.out.print("\033[33m" + " X " + "\u001B[0m");
                 } else if (tablero[i][j] == HUNDIDO) {
-                    System.out.print("\033[31m" + " X " + "\u001B[0m");
+                    System.out.print("\033[33m" + " X " + "\u001B[0m");
                 } else if (tablero[i][j] == FALLADO) {
-                    System.out.print("\033[37m" + " 〰 " + "\u001B[0m");
+                    System.out.print("\033[35m" + " 〰 " + "\u001B[0m");
                 }
             }
             System.out.println();
